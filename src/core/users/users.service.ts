@@ -54,6 +54,7 @@ export class UsersService {
     await this.repository.update(id, payload);
     return await this.getById(id);
   }
+
   public async delete(id: number): Promise<void> {
     const hasUser = await this.repository.existsBy({ id });
     if (!hasUser) {
