@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  sorokchat.database:
+    image: postgres:16-alpine    # Виправлено версію
+    container_name: sorokchat.database
+    restart: always
+    environment:
+      POSTGRES_USER: sorokchat
+      POSTGRES_PASSWORD: sorokchat
+      POSTGRES_DB: sorokchat
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sorokchat
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sorokchat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sorokchat.pgadmin:
+    image: dpage/pgadmin4
+    container_name: sorokchat.pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: Sorokovskys@ukr.net
+      PGADMIN_DEFAULT_PASSWORD: sorokchat
+    ports:
+      - "5050:80"
+    depends_on:
+      sorokchat.database:
+        condition: service_healthy
+    networks:
+      - sorokchat
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sorokchat:
+    driver: bridge

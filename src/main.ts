@@ -6,6 +6,7 @@ import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableShutdownHooks();
   const logger = app.get(Logger);
   const configService = app.get(ConfigService<Configuration>);
   const port = configService.getOrThrow('PORT', { infer: true });
