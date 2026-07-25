@@ -4,10 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { UserModel } from './user.model';
-import {
-  USER_ALREADY_EXISTS,
-  USER_NOT_FOUND,
-} from './users-messages.constants';
+import { USER_ALREADY_EXISTS, USER_NOT_FOUND } from './users.messages';
 import { hash } from 'argon2';
 
 @Injectable()

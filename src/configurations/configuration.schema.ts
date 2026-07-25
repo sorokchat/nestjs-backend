@@ -17,9 +17,17 @@ export const ConfigurationSchema = z.object({
     .max(MAX_PORT, {
       message: `Максимальне значення порту бази даних: ${MAX_PORT}`,
     }),
-  DB_USERNAME: z.string("Ім'я користувача бази даних має бути"),
-  DB_PASSWORD: z.string('Пароль бази даних має бути'),
-  DB_NAME: z.string("Ім'я бази даних має бути"),
+  DB_USERNAME: z.string({ message: "Ім'я користувача бази даних має бути" }),
+  DB_PASSWORD: z.string({ message: 'Пароль бази даних має бути' }),
+  DB_NAME: z.string({ message: "Ім'я бази даних має бути" }),
+  JWT_ACCESS_SECRET: z.string({ message: 'Ключ доступа має бути рядком' }),
+  JWT_ACCESS_EXPIRES_IN: z.string({
+    message: 'Термін дії токену доступу має бути рядком',
+  }),
+  JWT_REFRESH_SECRET: z.string({ message: 'Ключ оновлення має бути рядком' }),
+  JWT_REFRESH_EXPIRES_IN: z.string({
+    message: 'Термін дії токену оновлення має бути рядком',
+  }),
 });
 
 export type Configuration = z.infer<typeof ConfigurationSchema>;
