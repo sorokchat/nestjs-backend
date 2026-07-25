@@ -1,8 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import {
-  type NewUserPayload,
-  type UpdateUserPayload,
-} from '@sorokchat/contracts';
+import { NewUserDto, UpdateUserDto } from '../../libs/contracts';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
@@ -20,7 +17,7 @@ export class UsersService {
     private readonly repository: Repository<UserEntity>,
   ) {}
 
-  public async create(payload: NewUserPayload): Promise<UserModel> {
+  public async create(payload: NewUserDto): Promise<UserModel> {
     if (await this.repository.existsBy({ login: payload.login })) {
       throw new HttpException(USER_ALREADY_EXISTS, HttpStatus.CONFLICT);
     }
@@ -42,10 +39,7 @@ export class UsersService {
     return user;
   }
 
-  public async update(
-    id: number,
-    payload: UpdateUserPayload,
-  ): Promise<UserModel> {
+  public async update(id: number, payload: UpdateUserDto): Promise<UserModel> {
     const hasUser = await this.repository.existsBy({ id });
     if (!hasUser) {
       throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);

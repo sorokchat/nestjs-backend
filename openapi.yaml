@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: Sorokchat
+  version: 1.0.0
+  description: Український захищений месенджер
+components:
+  schemas:
+    NewUserPayload:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: Логін
+          example: sorokovsky_andrey
+        password:
+          type: string
+          description: Пароль
+          example: <PASSWORD>
+        displayDisplay:
+          type: string
+          description: Видиме ім'я
+          example: Сороковський Андрій
+    UpdateUserPayload:
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логін
+          example: sorokovsky_andrey
+        password:
+          type: string
+          description: Пароль
+          example: <PASSWORD>
+        displayDisplay:
+          type: string
+          description: Видиме ім'я
+          example: Сороковський Андрій
+    GetUserPayload:
+      type: object
+      required:
+        - id
+        - login
+        - displayName
+      properties:
+        id:
+          type: number
+          description: Унікальний ідентифікатор
+          example: 1
+        login:
+          type: string
+          description: Логін
+          example: sorokovsky_andrey
+        displayDisplay:
+          type: string
+          description: Видиме ім'я
+          example: Сороковський Андрій
+    AuthorizedPayload:
+      type: object
+      required:
+        - accessToken
+      properties:
+        accessToken:
+          type: string
+          description: Токен доступу
+          example: <TOKEN>
+    ErrorPayload:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+          description: Статус код
+          example: 400
+        message:
+          type: string
+          description: Повідомлення
+          additionalProperties: true
+    LoginPayload:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: Логін
+          example: sorokovsky_andrey
+        password:
+          type: string
+          description: Пароль
+          example: <PASSWORD>
+  headers:
+    Location:
+      schema:
+        type: string
+        description: Посилання на створений ресурс
+        example: http://localhost://8080/authorization/profile
+    WWW_Authenticate:
+      schema:
+        type: string
+        description: Метод потрібної аутентифікації
+        example: Bearer
+  responses:
+    RegisteredResponse:
+      description: Успішна реєстрація
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorizedPayload'
+      headers:
+        Location:
+          $ref: "#/components/headers/Location"
+    LoginnedResponse:
+      description: Успішний вхід
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorizedPayload'
+    RefreshedResponse:
+      description: Успішне оновлення токенів
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorizedPayload'
+    BadRequestResponse:
+      description: Помилка даних
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorPayload'
+    ConflictResponse:
+      description: Вже є така сутність
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorPayload'
+    BadCredentialsResponse:
+      description: Не правильні авторизаційні данні
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorPayload'
+    UnauthorizedResponse:
+      description: Користувач не авторизований
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorPayload'
+    ProfileResponse:
+      description: Успішне отримання
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetUserPayload'
+servers:
+  - url: http://localhost:8080
+paths:
+  /authorization/register:
+    post:
+      summary: Реєстрація
+      description: Реєстрація користувача у системі
+      operationId: register
+      tags:
+        - Авторизація
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUserPayload'
+      responses:
+        201:
+          $ref: "#/components/responses/RegisteredResponse"
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        409:
+          $ref: "#/components/responses/ConflictResponse"
+  /authorization/login:
+    post:
+      summary: Вхід
+      description: Вхід користувача у систему
+      operationId: login
+      tags:
+        - Авторизація
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginPayload'
+      responses:
+        200:
+          $ref: "#/components/responses/LoginnedResponse"
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        401:
+          $ref: "#/components/responses/BadCredentialsResponse"
+  /authorization/logout:
+    delete:
+      summary: Вихід
+      description: Вихід користувача із системи
+      operationId: logout
+      tags:
+        - Авторизація
+      responses:
+        204:
+          description: Успішний вихід
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+  /authorization/profile:
+    get:
+      summary: Профіль
+      description: Отримання даних авторизованого користувача
+      operationId: profile
+      tags:
+        - Авторизація
+      responses:
+        200:
+          $ref: "#/components/responses/ProfileResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+  /authorization/refresh-tokens:
+    patch:
+      summary: Оновлення токенів
+      description: Оновлення токенів авторизованого користувача
+      operationId: refresh-tokens
+      tags:
+        - Авторизація
+      responses:
+        200:
+          $ref: "#/components/responses/RefreshedResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
