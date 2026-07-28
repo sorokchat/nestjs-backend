@@ -1,10 +1,23 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+  Get,
+} from '@nestjs/common';
 import { type Response } from 'express';
 import { AuthorizationService } from './authorization.service';
 import { LoginDto, NewUserDto } from 'src/libs/contracts';
-import { AuthorizedPayload } from '@sorokchat/contracts';
+import {
+  type AuthorizedPayload,
+  type GetUserPayload,
+} from '@sorokchat/contracts';
 import { AUTHORIZATION_API } from './authorization.api';
-import { th } from 'zod/locales';
+import { User } from './user.decorator';
+import { UserModel } from '../users/user.model';
 
 @Controller(AUTHORIZATION_API.AUTHORIZATION)
 export class AuthorizationController {
@@ -26,6 +39,12 @@ export class AuthorizationController {
     @Res({ passthrough: true }) response: Response,
   ): Promise<AuthorizedPayload> {
     return await this.service.login(payload, response);
+  }
+
+  @Get(AUTHORIZATION_API.PROFILE)
+  @HttpCode(HttpStatus.OK)
+  public profile(@User() user: UserModel): GetUserPayload {
+    return user;
   }
 
   @Delete(AUTHORIZATION_API.LOGOUT)
