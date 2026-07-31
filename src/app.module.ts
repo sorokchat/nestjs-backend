@@ -6,6 +6,7 @@ import { AuthorizationModule } from './core/authorization/authorization.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeormConfiguration } from './configurations/typeorm.configuration';
 import { JwtModule } from '@nestjs/jwt';
+import { TokensModule } from './core/tokens/tokens.module';
 
 @Module({
   imports: [
@@ -18,8 +19,9 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({}),
     UsersModule,
     AuthorizationModule,
+    TokensModule,
   ],
   providers: [Logger],
   exports: [Logger],
 })
-export class AppModule {}
+export class AppModule { }

@@ -15,15 +15,21 @@ import {
   type AuthorizedPayload,
   type GetUserPayload,
 } from '@sorokchat/contracts';
-import { AUTHORIZATION_API } from './authorization.api';
-import { User } from './user.decorator';
+import {
+  AUTHORIZATION_CONTROLLER,
+  AUTHORIZATION_ROUTES,
+} from './authorization.api';
+import { CurrentUser } from '../users/current-user.decorator';
 import { UserModel } from '../users/user.model';
+import { Anonymous } from './anonymous.decorator';
+import { Authenticated } from './authenticated.decorator';
 
-@Controller(AUTHORIZATION_API.AUTHORIZATION)
+@Controller(AUTHORIZATION_CONTROLLER)
 export class AuthorizationController {
-  constructor(private readonly service: AuthorizationService) {}
+  constructor(private readonly service: AuthorizationService) { }
 
-  @Post(AUTHORIZATION_API.REGISTER)
+  @Post(AUTHORIZATION_ROUTES.REGISTER)
+  @Anonymous()
   @HttpCode(HttpStatus.CREATED)
   public async register(
     @Body() payload: NewUserDto,
@@ -32,7 +38,8 @@ export class AuthorizationController {
     return await this.service.register(payload, response);
   }
 
-  @Post(AUTHORIZATION_API.LOGIN)
+  @Post(AUTHORIZATION_ROUTES.LOGIN)
+  @Anonymous()
   @HttpCode(HttpStatus.CREATED)
   public async login(
     @Body() payload: LoginDto,
@@ -41,13 +48,15 @@ export class AuthorizationController {
     return await this.service.login(payload, response);
   }
 
-  @Get(AUTHORIZATION_API.PROFILE)
+  @Get(AUTHORIZATION_ROUTES.PROFILE)
+  @Authenticated()
   @HttpCode(HttpStatus.OK)
-  public profile(@User() user: UserModel): GetUserPayload {
+  public profile(@CurrentUser() user: UserModel): GetUserPayload {
     return user;
   }
 
-  @Delete(AUTHORIZATION_API.LOGOUT)
+  @Delete(AUTHORIZATION_ROUTES.LOGOUT)
+  @Authenticated()
   @HttpCode(HttpStatus.NO_CONTENT)
   public logout(@Res({ passthrough: true }) response: Response): void {
     this.service.logout(response);

@@ -18,7 +18,7 @@ export class AuthorizationService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<Configuration>,
-  ) {}
+  ) { }
 
   public async register(
     payload: NewUserDto,
