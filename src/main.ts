@@ -10,7 +10,6 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
 function setupSwagger(app: INestApplication<unknown>): void {
-
   const yamlPath = path.resolve(process.cwd(), 'openapi.yaml');
   const yamlFile = fs.readFileSync(yamlPath, 'utf8');
   const document = yaml.load(yamlFile) as OpenAPIObject;

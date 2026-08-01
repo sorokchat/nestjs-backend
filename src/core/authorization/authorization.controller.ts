@@ -40,7 +40,7 @@ export class AuthorizationController {
 
   @Post(AUTHORIZATION_ROUTES.LOGIN)
   @Anonymous()
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   public async login(
     @Body() payload: LoginDto,
     @Res({ passthrough: true }) response: Response,

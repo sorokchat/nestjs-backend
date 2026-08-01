@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { Configuration } from 'src/configurations/configuration.schema';
@@ -15,11 +15,12 @@ export class TokensService {
   private readonly accessTokenDuration: JwtSignOptions['expiresIn'];
   private readonly refreshTokenSecret: string;
   private readonly refreshTokenDuration: JwtSignOptions['expiresIn'];
-
+  private readonly logger: Logger;
   constructor(
     configService: ConfigService<Configuration>,
     private readonly jwtService: JwtService,
   ) {
+    this.logger = new Logger(TokensService.name);
     this.accessTokenSecret = configService.getOrThrow('JWT_ACCESS_SECRET', {
       infer: true,
     });
@@ -54,9 +55,13 @@ export class TokensService {
     try {
       const { id } = await this.jwtService.verifyAsync<{ id: number }>(
         accessToken,
+        { secret: this.accessTokenSecret },
       );
       return id;
-    } catch {
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error(error.message);
+      }
       return null;
     }
   }

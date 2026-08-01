@@ -2,13 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { LoginDto, NewUserDto } from 'src/libs/contracts';
 import { AuthorizedPayload } from '@sorokchat/contracts';
-import { JwtService } from '@nestjs/jwt';
 import { UserModel } from '../users/user.model';
-import { ConfigService } from '@nestjs/config';
-import { Configuration } from 'src/configurations/configuration.schema';
 import { Response } from 'express';
 import { BAD_CREDENTIALS } from './authorization.messages';
 import { verify } from 'argon2';
+import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class AuthorizationService {
@@ -16,8 +14,7 @@ export class AuthorizationService {
 
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService<Configuration>,
+    private readonly tokensService: TokensService,
   ) { }
 
   public async register(
@@ -58,28 +55,8 @@ export class AuthorizationService {
     user: UserModel,
     response: Response,
   ): Promise<AuthorizedPayload> {
-    const accessToken = await this.jwtService.signAsync(
-      { id: user.id },
-      {
-        secret: this.configService.getOrThrow('JWT_ACCESS_SECRET', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('JWT_ACCESS_EXPIRES_IN', {
-          infer: true,
-        }),
-      },
-    );
-    const refreshToken = await this.jwtService.signAsync(
-      { id: user.id },
-      {
-        secret: this.configService.getOrThrow('JWT_REFRESH_SECRET', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN', {
-          infer: true,
-        }),
-      },
-    );
+    const { accessToken, refreshToken } =
+      await this.tokensService.generateTokens(user);
     response.cookie(AuthorizationService.COOKIE_NAME, refreshToken, {
       httpOnly: true,
       domain: undefined,

@@ -4,6 +4,13 @@ info:
   version: 1.0.0
   description: Український захищений месенджер
 components:
+  securitySchemes:
+    bearerAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  security: 
+    - bearerAuthentication: []
   schemas:
     NewUserPayload:
       type: object
@@ -162,6 +169,8 @@ servers:
 paths:
   /authorization/register:
     post:
+      security:
+        - bearerAuthentication: []
       summary: Реєстрація
       description: Реєстрація користувача у системі
       operationId: register
@@ -177,10 +186,14 @@ paths:
           $ref: "#/components/responses/RegisteredResponse"
         400:
           $ref: "#/components/responses/BadRequestResponse"
+        403:
+          $ref: "#/components/responses/BadCredentialsResponse"
         409:
           $ref: "#/components/responses/ConflictResponse"
   /authorization/login:
     post:
+      security: 
+        - bearerAuthentication: []
       summary: Вхід
       description: Вхід користувача у систему
       operationId: login
@@ -196,10 +209,12 @@ paths:
           $ref: "#/components/responses/LoginnedResponse"
         400:
           $ref: "#/components/responses/BadRequestResponse"
-        401:
+        403:
           $ref: "#/components/responses/BadCredentialsResponse"
   /authorization/logout:
     delete:
+      security: 
+        - bearerAuthentication: []
       summary: Вихід
       description: Вихід користувача із системи
       operationId: logout
@@ -210,8 +225,10 @@ paths:
           description: Успішний вихід
         401:
           $ref: "#/components/responses/UnauthorizedResponse"
-  /authorization/profile:
+  /authorization/profile: 
     get:
+      security:
+        - bearerAuthentication: []
       summary: Профіль
       description: Отримання даних авторизованого користувача
       operationId: profile
@@ -222,8 +239,10 @@ paths:
           $ref: "#/components/responses/ProfileResponse"
         401:
           $ref: "#/components/responses/UnauthorizedResponse"
-  /authorization/refresh-tokens:
+  /authorization/refresh-tokens: 
     patch:
+      security:
+        - bearerAuthentication: []
       summary: Оновлення токенів
       description: Оновлення токенів авторизованого користувача
       operationId: refresh-tokens
