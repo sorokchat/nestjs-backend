@@ -19,7 +19,7 @@ export class AuthorizationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly tokensService: TokensService,
-  ) { }
+  ) {}
 
   public async register(
     payload: NewUserDto,

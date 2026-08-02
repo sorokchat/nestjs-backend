@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TokensModule } from './core/tokens/tokens.module';
 import { AccessTokenMiddleware } from './core/authorization/access-token.middleware';
 import { ChatsModule } from './core/chats/chats.module';
+import { ParticipantsModule } from './core/participants/participants.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ChatsModule } from './core/chats/chats.module';
     AuthorizationModule,
     TokensModule,
     ChatsModule,
+    ParticipantsModule,
   ],
   providers: [Logger, AccessTokenMiddleware],
   exports: [Logger],
