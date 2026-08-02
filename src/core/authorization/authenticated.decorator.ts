@@ -7,12 +7,13 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { UNAUTHORIZED } from './authorization.messages';
+import { Request } from 'express';
 
 class AuthenticatedGuard implements CanActivate {
   public canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp();
+    const request: Request = context.switchToHttp().getRequest();
     if (!request['user']) {
       throw new HttpException(UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }

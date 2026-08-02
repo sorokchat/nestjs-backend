@@ -200,6 +200,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorPayload"
+    NotFoundResponse:
+      description: Не знайдено
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorPayload"
     ProfileResponse:
       description: Успішне отримання
       content:
@@ -327,12 +333,72 @@ paths:
       summary: Створення чату
       description: Створює чат у системі
       operationId: create-chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewChatPayload"
       responses:
         201:
           $ref: "#/components/responses/ChatCreatedResponse"
         401:
-          $ref: "#/compoments/responses/UnauthorizedResponse"
-  /chats/{id}:
+          $ref: "#/components/responses/UnauthorizedResponse"
+  /chats/by-id/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Унікальний ідентифікатор чату
+        required: true
+        schema:
+          example: 1
+          type: integer
     get:
       security:
         - bearerAuthentication: []
+      tags:
+        - Чати
+      summary: Отримання чату
+      description: Отримання чату за ідентифікатором
+      operationId: get-chat-by-id
+      responses:
+        200:
+          $ref: "#/components/responses/GetChatResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+        404:
+          $ref: "#/components/responses/NotFoundResponse"
+    put:
+      tags:
+        - Чати
+      summary: Онолення чату
+      description: Оновлення чату за ідентифікатором
+      operationId: update-chat-by-id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateChatPayload"
+      responses:
+        200:
+          $ref: "#/components/responses/GetChatResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        404:
+          $ref: "#/components/responses/NotFoundResponse"
+    delete:
+      tags:
+        - Чати
+      summary: Видалення чату
+      description: Видалення чату за ідентифікатором
+      operationId: delete-chat-by-id
+      responses:
+        204:
+          $ref: "#/components/responses/ChatDeletedResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedResponse"
+        400:
+          $ref: "#/components/responses/BadRequestResponse"
+        404:
+          $ref: "#/components/responses/NotFoundResponse"
