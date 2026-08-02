@@ -7,8 +7,10 @@ import {
   Post,
   Res,
   Get,
+  Patch,
+  Req,
 } from '@nestjs/common';
-import { type Response } from 'express';
+import { type Request, type Response } from 'express';
 import { AuthorizationService } from './authorization.service';
 import { LoginDto, NewUserDto } from 'src/libs/contracts';
 import {
@@ -60,5 +62,15 @@ export class AuthorizationController {
   @HttpCode(HttpStatus.NO_CONTENT)
   public logout(@Res({ passthrough: true }) response: Response): void {
     this.service.logout(response);
+  }
+
+  @Patch(AUTHORIZATION_ROUTES.REFRESH_TOKENS)
+  @Anonymous()
+  @HttpCode(HttpStatus.OK)
+  public async refreshTokens(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthorizedPayload> {
+    return await this.service.refreshTokens(request, response);
   }
 }

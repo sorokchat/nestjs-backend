@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt';
 import { Configuration } from 'src/configurations/configuration.schema';
 import { UserModel } from '../users/user.model';
 
@@ -51,12 +51,32 @@ export class TokensService {
     return { accessToken, refreshToken };
   }
 
-  public async extractUserId(accessToken: string): Promise<number | null> {
+  public async extractUserIdFromAccessToken(
+    accessToken: string,
+  ): Promise<number | null> {
+    return await this.extractUserIdFromToken(
+      accessToken,
+      this.accessTokenSecret,
+    );
+  }
+
+  public async extractUserIdFromRefreshToken(
+    refreshToken: string,
+  ): Promise<number | null> {
+    return await this.extractUserIdFromToken(
+      refreshToken,
+      this.refreshTokenSecret,
+    );
+  }
+
+  private async extractUserIdFromToken(
+    token: string,
+    secret: JwtVerifyOptions['secret'],
+  ): Promise<number | null> {
     try {
-      const { id } = await this.jwtService.verifyAsync<{ id: number }>(
-        accessToken,
-        { secret: this.accessTokenSecret },
-      );
+      const { id } = await this.jwtService.verifyAsync<{ id: number }>(token, {
+        secret,
+      });
       return id;
     } catch (error) {
       if (error instanceof Error) {

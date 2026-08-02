@@ -14,7 +14,7 @@ export class AccessTokenMiddleware implements NestMiddleware {
     const header = request.headers.authorization;
     if (header && header.startsWith('Bearer ')) {
       const token = header.replace('Bearer ', '');
-      const id = await this.tokensService.extractUserId(token);
+      const id = await this.tokensService.extractUserIdFromAccessToken(token);
       if (id) {
         const user = await this.usersService.getById(id);
         if (user) {

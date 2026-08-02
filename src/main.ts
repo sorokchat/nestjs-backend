@@ -8,6 +8,7 @@ import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import cookieParser from 'cookie-parser';
 
 function setupSwagger(app: INestApplication<unknown>): void {
   const yamlPath = path.resolve(process.cwd(), 'openapi.yaml');
@@ -20,6 +21,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   setupSwagger(app);
   app.enableShutdownHooks();
+  app.use(cookieParser());
   app.useGlobalPipes(new ZodValidationPipe());
   const logger = app.get(Logger);
   const configService = app.get(ConfigService<Configuration>);

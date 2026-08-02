@@ -3,8 +3,8 @@ import { UsersService } from '../users/users.service';
 import { LoginDto, NewUserDto } from 'src/libs/contracts';
 import { AuthorizedPayload } from '@sorokchat/contracts';
 import { UserModel } from '../users/user.model';
-import { Response } from 'express';
-import { BAD_CREDENTIALS } from './authorization.messages';
+import { Request, Response } from 'express';
+import { BAD_CREDENTIALS, UNAUTHORIZED } from './authorization.messages';
 import { verify } from 'argon2';
 import { TokensService } from '../tokens/tokens.service';
 
@@ -49,6 +49,28 @@ export class AuthorizationService {
       secure: true,
       maxAge: 0,
     });
+  }
+
+  public async refreshTokens(
+    request: Request,
+    response: Response,
+  ): Promise<AuthorizedPayload> {
+    const cookies = request.cookies;
+    if (cookies[AuthorizationService.COOKIE_NAME]) {
+      const refreshToken: string = cookies[
+        AuthorizationService.COOKIE_NAME
+      ] as string;
+      const userId =
+        await this.tokensService.extractUserIdFromRefreshToken(refreshToken);
+      if (userId !== null) {
+        const user = await this.usersService.getById(userId);
+        return await this.authenticate(user, response);
+      }
+    }
+    response.setHeaders(
+      new Map<string, string>([['WWW-Authenticate', 'Cookie']]),
+    );
+    throw new HttpException(UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
   }
 
   private async authenticate(
