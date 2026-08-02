@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   title: Sorokchat
   version: 1.0.0
@@ -9,7 +9,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  security: 
+  security:
     - bearerAuthentication: []
   schemas:
     NewUserPayload:
@@ -101,6 +101,48 @@ components:
           type: string
           description: Пароль
           example: <PASSWORD>
+    NewChatPayload:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Назва чату
+          example: Крутий чат
+        description:
+          type: string
+          description: Опис чату
+          example: Дуже крутий чат
+    UpdateChatPayload:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Назва чату
+          example: Крутий чат
+        description:
+          type: string
+          description: Опис чату
+          example: Дуже крутий чат
+    GetChatPayload:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          description: Унікальний ідентифікатор чату
+          example: 1
+        name:
+          type: string
+          description: Назва чату
+          example: Крутий чат
+        description:
+          type: string
+          description: Опис чату
+          example: Дуже крутий чат
   headers:
     Location:
       schema:
@@ -118,7 +160,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AuthorizedPayload'
+            $ref: "#/components/schemas/AuthorizedPayload"
       headers:
         Location:
           $ref: "#/components/headers/Location"
@@ -127,43 +169,66 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AuthorizedPayload'
+            $ref: "#/components/schemas/AuthorizedPayload"
     RefreshedResponse:
       description: Успішне оновлення токенів
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AuthorizedPayload'
+            $ref: "#/components/schemas/AuthorizedPayload"
     BadRequestResponse:
       description: Помилка даних
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorPayload'
+            $ref: "#/components/schemas/ErrorPayload"
     ConflictResponse:
       description: Вже є така сутність
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorPayload'
+            $ref: "#/components/schemas/ErrorPayload"
     BadCredentialsResponse:
       description: Не правильні авторизаційні данні
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorPayload'
+            $ref: "#/components/schemas/ErrorPayload"
     UnauthorizedResponse:
       description: Користувач не авторизований
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorPayload'
+            $ref: "#/components/schemas/ErrorPayload"
     ProfileResponse:
       description: Успішне отримання
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/GetUserPayload'
+            $ref: "#/components/schemas/GetUserPayload"
+    ChatCreatedResponse:
+      description: Успішне створення чату
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetChatPayload"
+      headers:
+        Location:
+          $ref: "#/components/headers/Location"
+    ChatUpdatedResponse:
+      description: Успішне оновлення чату
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetChatPayload"
+    GetChatResponse:
+      description: Успішне отримання чату
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetChatPayload"
+    ChatDeletedResponse:
+      description: Успішне видалення чату
 servers:
   - url: http://localhost:8080
 paths:
@@ -180,7 +245,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUserPayload'
+              $ref: "#/components/schemas/NewUserPayload"
       responses:
         201:
           $ref: "#/components/responses/RegisteredResponse"
@@ -192,7 +257,7 @@ paths:
           $ref: "#/components/responses/ConflictResponse"
   /authorization/login:
     post:
-      security: 
+      security:
         - bearerAuthentication: []
       summary: Вхід
       description: Вхід користувача у систему
@@ -203,7 +268,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginPayload'
+              $ref: "#/components/schemas/LoginPayload"
       responses:
         200:
           $ref: "#/components/responses/LoginnedResponse"
@@ -213,7 +278,7 @@ paths:
           $ref: "#/components/responses/BadCredentialsResponse"
   /authorization/logout:
     delete:
-      security: 
+      security:
         - bearerAuthentication: []
       summary: Вихід
       description: Вихід користувача із системи
@@ -225,7 +290,7 @@ paths:
           description: Успішний вихід
         401:
           $ref: "#/components/responses/UnauthorizedResponse"
-  /authorization/profile: 
+  /authorization/profile:
     get:
       security:
         - bearerAuthentication: []
@@ -239,7 +304,7 @@ paths:
           $ref: "#/components/responses/ProfileResponse"
         401:
           $ref: "#/components/responses/UnauthorizedResponse"
-  /authorization/refresh-tokens: 
+  /authorization/refresh-tokens:
     patch:
       security:
         - bearerAuthentication: []
@@ -253,3 +318,21 @@ paths:
           $ref: "#/components/responses/RefreshedResponse"
         401:
           $ref: "#/components/responses/UnauthorizedResponse"
+  /chats:
+    post:
+      security:
+        - bearerAuthentication: []
+      tags:
+        - Чати
+      summary: Створення чату
+      description: Створює чат у системі
+      operationId: create-chat
+      responses:
+        201:
+          $ref: "#/components/responses/ChatCreatedResponse"
+        401:
+          $ref: "#/compoments/responses/UnauthorizedResponse"
+  /chats/{id}:
+    get:
+      security:
+        - bearerAuthentication: []
