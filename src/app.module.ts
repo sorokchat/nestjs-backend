@@ -8,6 +8,7 @@ import { getTypeormConfiguration } from './configurations/typeorm.configuration'
 import { JwtModule } from '@nestjs/jwt';
 import { TokensModule } from './core/tokens/tokens.module';
 import { AccessTokenMiddleware } from './core/authorization/access-token.middleware';
+import { ChatsModule } from './core/chats/chats.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AccessTokenMiddleware } from './core/authorization/access-token.middlew
     UsersModule,
     AuthorizationModule,
     TokensModule,
+    ChatsModule,
   ],
   providers: [Logger, AccessTokenMiddleware],
   exports: [Logger],
