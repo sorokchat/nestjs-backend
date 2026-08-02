@@ -7,6 +7,10 @@ import { Request, Response } from 'express';
 import { BAD_CREDENTIALS, UNAUTHORIZED } from './authorization.messages';
 import { verify } from 'argon2';
 import { TokensService } from '../tokens/tokens.service';
+import {
+  AUTHORIZATION_CONTROLLER,
+  AUTHORIZATION_ROUTES,
+} from './authorization.api';
 
 @Injectable()
 export class AuthorizationService {
@@ -22,6 +26,14 @@ export class AuthorizationService {
     response: Response,
   ): Promise<AuthorizedPayload> {
     const createdUser = await this.usersService.create(payload);
+    response.setHeaders(
+      new Map<string, string>([
+        [
+          'Location',
+          `${AUTHORIZATION_CONTROLLER}/${AUTHORIZATION_ROUTES.PROFILE}`,
+        ],
+      ]),
+    );
     return await this.authenticate(createdUser, response);
   }
 

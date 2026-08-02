@@ -8,10 +8,12 @@ import {
   Post,
   Res,
   Param,
+  Put,
+  Delete,
 } from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { CHATS_ONTROLLER, CHATS_ROUTES } from './chats.api';
-import { NewChatDto } from 'src/libs/contracts';
+import { NewChatDto, UpdateChatDto } from 'src/libs/contracts';
 import { type Response } from 'express';
 import { GetChatPayload } from '@sorokchat/contracts';
 import { Authenticated } from '../authorization/authenticated.decorator';
@@ -43,5 +45,22 @@ export class ChatsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetChatPayload> {
     return await this.service.getById(id);
+  }
+
+  @Authenticated()
+  @Put(CHATS_ROUTES.UPDATE)
+  @HttpCode(HttpStatus.OK)
+  public async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() payload: UpdateChatDto,
+  ): Promise<GetChatPayload> {
+    return await this.service.update(id, payload);
+  }
+
+  @Authenticated()
+  @Delete(CHATS_ROUTES.DELETE)
+  @HttpCode(HttpStatus.NOT_FOUND)
+  public async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return await this.service.delete(id);
   }
 }
