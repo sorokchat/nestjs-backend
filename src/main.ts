@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import { resolveNestJsOpenApi } from '@sorokchat/contracts';
 
 async function setupSwagger(app: INestApplication<unknown>): Promise<void> {
-  const document = await resolveNestJsOpenApi('localhost:8080');
+  const document = await resolveNestJsOpenApi('');
   SwaggerModule.setup('api', app, document);
 }
 
