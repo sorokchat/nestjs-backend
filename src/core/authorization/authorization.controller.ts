@@ -39,7 +39,7 @@ export class AuthorizationController {
     return await this.service.register(payload, response);
   }
 
-  @Put(AUTHORIZATION_ROUTES.LOGIN)
+  @Post(AUTHORIZATION_ROUTES.LOGIN)
   @Anonymous()
   public async login(
     @Body() payload: LoginDto,
