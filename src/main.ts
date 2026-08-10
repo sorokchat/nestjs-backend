@@ -5,6 +5,7 @@ import { Configuration } from './configurations/configuration.schema';
 import { INestApplication, Logger } from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { resolveNestJsOpenApi } from '@sorokchat/contracts';
 
 async function setupSwagger(app: INestApplication<unknown>): Promise<void> {
@@ -16,6 +17,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await setupSwagger(app);
   app.enableShutdownHooks();
+  app.use(cookieParser());
   app.useGlobalPipes(new ZodValidationPipe());
   const logger = app.get(Logger);
   const configService = app.get(ConfigService<Configuration>);

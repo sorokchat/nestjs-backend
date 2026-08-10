@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validate } from './configurations/validation';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeormConfiguration } from './configurations/typeorm.configuration';
-import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -13,7 +12,6 @@ import { JwtModule } from '@nestjs/jwt';
       inject: [ConfigService],
       useFactory: getTypeormConfiguration,
     }),
-    JwtModule.register({}),
   ],
   providers: [Logger],
   exports: [Logger],
