@@ -1,4 +1,12 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import {
   CHATS_CONTROLLER,
@@ -30,5 +38,15 @@ export class ChatsController {
     const location = `${CHATS_CONTROLLER}/by-id/${chat.id}`;
     response.status(HttpStatus.CREATED).location(location);
     return this.mapper.toGet(chat);
+  }
+
+  @Authorized()
+  @HttpCode(HttpStatus.OK)
+  @Get(CHATS_ROUTES.GET_MY)
+  public async getMe(
+    @CurrentUser('id') userId: number,
+  ): Promise<GetChatPayload[]> {
+    const chats = await this.service.myChats(userId);
+    return chats.map((chat) => this.mapper.toGet(chat));
   }
 }

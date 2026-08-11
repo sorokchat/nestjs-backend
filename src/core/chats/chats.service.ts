@@ -7,6 +7,7 @@ import { NewChatDto } from 'src/libs/contracts';
 import { ChatModel } from './chat.model';
 import { UserModel } from '../users/user.model';
 import { ChatRole } from './chat-role';
+import { CurrentUser } from '../authorization/current-user.decorator';
 
 @Injectable()
 export class ChatsService {
@@ -36,5 +37,13 @@ export class ChatsService {
       },
     });
     return this.mapper.toModel(chatWithMembers!);
+  }
+
+  public async myChats(userId: number): Promise<ChatModel[]> {
+    const chats = await this.repository.find({
+      where: { members: { user: { id: userId } } },
+      relations: { members: { chat: true, user: true } },
+    });
+    return chats.map((chat) => this.mapper.toModel(chat));
   }
 }

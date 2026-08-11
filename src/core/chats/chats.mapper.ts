@@ -20,14 +20,12 @@ export class ChatsMapper {
   }
 
   public toModel(entity: ChatEntity): ChatModel {
-    return {
-      id: entity.id,
-      name: entity.name,
-      description: entity.description || null,
-      members: entity.members.map((member) =>
-        this.membersMapper.toModel(member),
-      ),
-    };
+    return new ChatModel(
+      entity.id,
+      entity.name,
+      entity.description || null,
+      entity.members.map((member) => this.membersMapper.toModel(member)),
+    );
   }
 
   public toGet(model: ChatModel): GetChatPayload {

@@ -7,4 +7,16 @@ export class ChatModel {
     public description: string | null,
     public members: MemberModel[],
   ) {}
+
+  public hasMember(userId: number): boolean {
+    return this.members.some(
+      (member) => member.user.id === userId && member.isMember(),
+    );
+  }
+
+  public hasAdmin(userId: number): boolean {
+    return this.members.some(
+      (member) => member.user.id === userId && member.isAdmin(),
+    );
+  }
 }
