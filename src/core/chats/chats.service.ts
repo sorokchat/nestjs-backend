@@ -173,4 +173,31 @@ export class ChatsService {
     member.role = role;
     await this.repository.save(this.mapper.toEntity(chat));
   }
+
+  public async revoke(
+    chatId: number,
+    adminId: number,
+    userId: number,
+  ): Promise<void> {
+    const foundChat = await this.repository.findOne({
+      where: { id: chatId },
+      relations: { members: { user: true, chat: true } },
+    });
+    if (!foundChat)
+      throw new HttpException(CHAT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const chat = this.mapper.toModel(foundChat);
+    if (!chat.hasAdmin(adminId))
+      throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    const member = chat.members.find((item) => item.user.id === userId);
+    if (!member)
+      throw new HttpException(USER_NOT_MEMBER, HttpStatus.BAD_REQUEST);
+    const adminCount = chat.members.filter((member) => member.isAdmin()).length;
+    if (adminCount < 2)
+      throw new HttpException(
+        CAN_NOT_REMOVE_LAST_ADMIN,
+        HttpStatus.BAD_REQUEST,
+      );
+    member.role = ChatRole.MEMBER;
+    await this.repository.save(this.mapper.toEntity(chat));
+  }
 }

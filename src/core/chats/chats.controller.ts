@@ -119,4 +119,15 @@ export class ChatsController {
   ): Promise<void> {
     return await this.service.grant(chatId, adminId, userId, role);
   }
+
+  @Authorized()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(CHATS_ROUTES.REVOKE)
+  public async revoke(
+    @CurrentUser('id') adminId: number,
+    @Param('id', ParseIntPipe) chatId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<void> {
+    return await this.service.revoke(chatId, adminId, userId);
+  }
 }
