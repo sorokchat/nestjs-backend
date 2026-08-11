@@ -149,5 +149,6 @@ export class ChatsService {
         HttpStatus.BAD_REQUEST,
       );
     chat.removeMember(userId);
+    await this.repository.save(this.mapper.toEntity(chat));
   }
 }
