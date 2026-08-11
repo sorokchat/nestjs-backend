@@ -74,4 +74,15 @@ export class ChatsController {
   ): Promise<void> {
     return await this.service.delete(chatId, userId);
   }
+
+  @Authorized()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(CHATS_ROUTES.ADD_MEMBER)
+  public async addMember(
+    @CurrentUser('id') adminId: number,
+    @Param('id') chatId: number,
+    @Param('userId') userId: number,
+  ): Promise<void> {
+    return await this.service.addMember(adminId, chatId, userId);
+  }
 }

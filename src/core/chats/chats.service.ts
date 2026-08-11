@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { ChatEntity } from './chat.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatsMapper } from './chats.mapper';
@@ -7,7 +7,12 @@ import { NewChatDto, UpdateChatDto } from 'src/libs/contracts';
 import { ChatModel } from './chat.model';
 import { UserModel } from '../users/user.model';
 import { ChatRole } from './chat-role';
-import { ACCESS_DENIED, CHAT_NOT_FOUND } from '@sorokchat/contracts';
+import {
+  ACCESS_DENIED,
+  CHAT_NOT_FOUND,
+  MEMBER_EXISTS,
+} from '@sorokchat/contracts';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ChatsService {
@@ -15,6 +20,7 @@ export class ChatsService {
     @InjectRepository(ChatEntity)
     private readonly repository: Repository<ChatEntity>,
     private readonly mapper: ChatsMapper,
+    private readonly usersService: UsersService,
   ) {}
 
   public async create(
@@ -41,7 +47,6 @@ export class ChatsService {
 
   public async myChats(userId: number): Promise<ChatModel[]> {
     const chats = await this.repository.find({
-      where: { members: { user: { id: userId } } },
       relations: { members: { chat: true, user: true } },
     });
     return chats
@@ -79,5 +84,26 @@ export class ChatsService {
     if (!chat.hasAdmin(userId))
       throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
     await this.repository.delete(chat.id!);
+  }
+
+  public async addMember(
+    adminId: number,
+    chatId: number,
+    userId: number,
+  ): Promise<void> {
+    const foundChat = await this.repository.findOne({
+      where: { id: chatId },
+      relations: { members: { user: true, chat: true } },
+    });
+    if (!foundChat)
+      throw new HttpException(CHAT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const chat = this.mapper.toModel(foundChat);
+    if (adminId === userId || chat.hasMember(userId))
+      throw new HttpException(MEMBER_EXISTS, HttpStatus.CONFLICT);
+    if (!chat.hasAdmin(adminId))
+      throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    const user = await this.usersService.getBy({ id: userId });
+    chat.addMember(user);
+    await this.repository.save(this.mapper.toEntity(chat));
   }
 }

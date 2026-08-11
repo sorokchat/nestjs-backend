@@ -1,3 +1,5 @@
+import { UserModel } from '../users/user.model';
+import { ChatRole } from './chat-role';
 import { MemberModel } from './member.model';
 
 export class ChatModel {
@@ -18,5 +20,13 @@ export class ChatModel {
     return this.members.some(
       (member) => member.user.id === userId && member.isAdmin(),
     );
+  }
+
+  public addMember(user: UserModel): void {
+    this.members.push({
+      chatId: this.id!,
+      role: ChatRole.MEMBER,
+      user,
+    } as MemberModel);
   }
 }
