@@ -23,6 +23,7 @@ import { Authorized } from '../authorization/authorized.guard';
 import { CurrentUser } from '../authorization/current-user.decorator';
 import { UserModel } from '../users/user.model';
 import { type Response } from 'express';
+import { ChatRole } from './chat-role';
 
 @Controller(CHATS_CONTROLLER)
 export class ChatsController {
@@ -105,5 +106,17 @@ export class ChatsController {
     @Param('id', ParseIntPipe) chatId: number,
   ): Promise<void> {
     return await this.service.leave(chatId, userId);
+  }
+
+  @Authorized()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(CHATS_ROUTES.GRANT)
+  public async grant(
+    @CurrentUser('id') adminId: number,
+    @Param('id', ParseIntPipe) chatId: number,
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('role') role: ChatRole,
+  ): Promise<void> {
+    return await this.service.grant(chatId, adminId, userId, role);
   }
 }
