@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ChatEntity } from './chat.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatsMapper } from './chats.mapper';
-import { NewChatDto } from 'src/libs/contracts';
+import { NewChatDto, UpdateChatDto } from 'src/libs/contracts';
 import { ChatModel } from './chat.model';
 import { UserModel } from '../users/user.model';
 import { ChatRole } from './chat-role';
-import { CurrentUser } from '../authorization/current-user.decorator';
+import { ACCESS_DENIED, CHAT_NOT_FOUND } from '@sorokchat/contracts';
 
 @Injectable()
 export class ChatsService {
@@ -44,6 +44,27 @@ export class ChatsService {
       where: { members: { user: { id: userId } } },
       relations: { members: { chat: true, user: true } },
     });
-    return chats.map((chat) => this.mapper.toModel(chat));
+    return chats
+      .map((chat) => this.mapper.toModel(chat))
+      .filter((chat) => chat.hasMember(userId));
+  }
+
+  public async update(
+    chatId: number,
+    userId: number,
+    payload: UpdateChatDto,
+  ): Promise<void> {
+    const foundChat = await this.repository.findOne({
+      where: { id: chatId, members: { user: { id: userId } } },
+      relations: { members: { user: true, chat: true } },
+    });
+    if (!foundChat)
+      throw new HttpException(CHAT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const chat = this.mapper.toModel(foundChat);
+    if (!chat.hasAdmin(userId))
+      throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    if (payload.name) chat.name = payload.name;
+    if (payload.description) chat.description = payload.description;
+    await this.repository.save(this.mapper.toEntity(chat));
   }
 }

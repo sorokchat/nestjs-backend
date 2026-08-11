@@ -4,7 +4,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
+  Put,
   Res,
 } from '@nestjs/common';
 import { ChatsService } from './chats.service';
@@ -13,7 +16,7 @@ import {
   CHATS_ROUTES,
   GetChatPayload,
 } from '@sorokchat/contracts';
-import { NewChatDto } from 'src/libs/contracts';
+import { NewChatDto, UpdateChatDto } from 'src/libs/contracts';
 import { ChatsMapper } from './chats.mapper';
 import { Authorized } from '../authorization/authorized.guard';
 import { CurrentUser } from '../authorization/current-user.decorator';
@@ -48,5 +51,16 @@ export class ChatsController {
   ): Promise<GetChatPayload[]> {
     const chats = await this.service.myChats(userId);
     return chats.map((chat) => this.mapper.toGet(chat));
+  }
+
+  @Authorized()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(CHATS_ROUTES.UPDATE)
+  public async update(
+    @Param('id', ParseIntPipe) chatId: number,
+    @CurrentUser('id') userId: number,
+    @Body() payload: UpdateChatDto,
+  ): Promise<void> {
+    return await this.service.update(chatId, userId, payload);
   }
 }
