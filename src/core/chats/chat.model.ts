@@ -8,7 +8,7 @@ export class ChatModel {
     public name: string,
     public description: string | null,
     public members: MemberModel[],
-  ) {}
+  ) { }
 
   public hasMember(userId: number): boolean {
     return this.members.some(
@@ -28,5 +28,9 @@ export class ChatModel {
       role: ChatRole.MEMBER,
       user,
     } as MemberModel);
+  }
+
+  public removeMember(userId: number): void {
+    this.members = this.members.filter((member) => member.user.id !== userId);
   }
 }

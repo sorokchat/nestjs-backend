@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ChatEntity } from './chat.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatsMapper } from './chats.mapper';
@@ -9,8 +9,10 @@ import { UserModel } from '../users/user.model';
 import { ChatRole } from './chat-role';
 import {
   ACCESS_DENIED,
+  CAN_NOT_REMOVE_LAST_ADMIN,
   CHAT_NOT_FOUND,
   MEMBER_EXISTS,
+  USER_NOT_MEMBER,
 } from '@sorokchat/contracts';
 import { UsersService } from '../users/users.service';
 
@@ -104,6 +106,31 @@ export class ChatsService {
       throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
     const user = await this.usersService.getBy({ id: userId });
     chat.addMember(user);
+    await this.repository.save(this.mapper.toEntity(chat));
+  }
+
+  public async removeMember(
+    adminId: number,
+    chatId: number,
+    userId: number,
+  ): Promise<void> {
+    const found = await this.repository.findOne({
+      where: { id: chatId },
+      relations: { members: { user: true, chat: true } },
+    });
+    if (!found) throw new HttpException(CHAT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const chat = this.mapper.toModel(found);
+    if (!chat.hasAdmin(adminId))
+      throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    if (!chat.hasMember(userId))
+      throw new HttpException(USER_NOT_MEMBER, HttpStatus.NOT_FOUND);
+    const adminCount = chat.members.filter((member) => member.isAdmin()).length;
+    if (chat.hasAdmin(userId) && adminCount <= 1)
+      throw new HttpException(
+        CAN_NOT_REMOVE_LAST_ADMIN,
+        HttpStatus.BAD_REQUEST,
+      );
+    chat.removeMember(userId);
     await this.repository.save(this.mapper.toEntity(chat));
   }
 }
