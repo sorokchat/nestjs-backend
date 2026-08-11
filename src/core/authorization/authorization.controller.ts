@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Put,
   Req,
@@ -36,10 +38,13 @@ export class AuthorizationController {
     @Body() payload: RegisterDto,
     @Res({ passthrough: true }) response: Response,
   ): Promise<AuthorizedPayload> {
+    const location = `${AUTHORIZATION_CONTROLLER}${AUTHORIZATION_ROUTES.PROFILE}`;
+    response.status(HttpStatus.CREATED).location(location);
     return await this.service.register(payload, response);
   }
 
   @Post(AUTHORIZATION_ROUTES.LOGIN)
+  @HttpCode(HttpStatus.CREATED)
   @Anonymous()
   public async login(
     @Body() payload: LoginDto,
@@ -55,6 +60,7 @@ export class AuthorizationController {
   }
 
   @Put(AUTHORIZATION_ROUTES.REFRESH_TOKENS)
+  @HttpCode(HttpStatus.OK)
   public async refreshTokens(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
@@ -63,6 +69,7 @@ export class AuthorizationController {
   }
 
   @Delete(AUTHORIZATION_ROUTES.LOGOUT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   public logout(@Res({ passthrough: true }) response: Response): void {
     return this.service.logout(response);
   }

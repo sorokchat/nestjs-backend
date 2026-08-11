@@ -7,6 +7,7 @@ import { UsersModule } from './core/users/users.module';
 import { AuthorizationModule } from './core/authorization/authorization.module';
 import { TokensModule } from './core/tokens/tokens.module';
 import { AccessTokenMiddleware } from './core/authorization/access-token.middleware';
+import { ChatsModule } from './core/chats/chats.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AccessTokenMiddleware } from './core/authorization/access-token.middlew
     UsersModule,
     AuthorizationModule,
     TokensModule,
+    ChatsModule,
   ],
   providers: [Logger],
   exports: [Logger],

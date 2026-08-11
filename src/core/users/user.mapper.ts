@@ -6,13 +6,13 @@ import { type GetUserPayload } from '@sorokchat/contracts';
 @Injectable()
 export class UserMapper {
   public toEntity(model: UserModel): UserEntity {
-    return new UserEntity(
-      model.id,
-      model.login,
-      model.password,
-      model.displayName,
-      model.role,
-    );
+    return {
+      id: model.id ?? undefined!,
+      login: model.login,
+      password: model.password,
+      displayName: model.displayName,
+      role: model.role,
+    };
   }
 
   public toModel(entity: UserEntity): UserModel {
