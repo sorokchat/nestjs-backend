@@ -96,4 +96,14 @@ export class ChatsController {
   ): Promise<void> {
     return await this.service.removeMember(adminId, chatId, userId);
   }
+
+  @Authorized()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Put(CHATS_ROUTES.LEAVE)
+  public async leave(
+    @CurrentUser('id') userId: number,
+    @Param('id', ParseIntPipe) chatId: number,
+  ): Promise<void> {
+    return await this.service.leave(chatId, userId);
+  }
 }

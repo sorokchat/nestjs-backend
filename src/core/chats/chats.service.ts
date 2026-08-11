@@ -133,4 +133,21 @@ export class ChatsService {
     chat.removeMember(userId);
     await this.repository.save(this.mapper.toEntity(chat));
   }
+
+  public async leave(chatId: number, userId: number): Promise<void> {
+    const foundChat = await this.repository.findOne({
+      where: { id: chatId },
+      relations: { members: { user: true, chat: true } },
+    });
+    if (!foundChat)
+      throw new HttpException(CHAT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const chat = this.mapper.toModel(foundChat);
+    const adminCount = chat.members.filter((member) => member.isAdmin()).length;
+    if (chat.hasAdmin(userId) && adminCount <= 1)
+      throw new HttpException(
+        CAN_NOT_REMOVE_LAST_ADMIN,
+        HttpStatus.BAD_REQUEST,
+      );
+    chat.removeMember(userId);
+  }
 }
