@@ -80,8 +80,8 @@ export class ChatsController {
   @Put(CHATS_ROUTES.ADD_MEMBER)
   public async addMember(
     @CurrentUser('id') adminId: number,
-    @Param('id') chatId: number,
-    @Param('userId') userId: number,
+    @Param('id', ParseIntPipe) chatId: number,
+    @Param('userId', ParseIntPipe) userId: number,
   ): Promise<void> {
     return await this.service.addMember(adminId, chatId, userId);
   }
