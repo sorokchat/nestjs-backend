@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -62,5 +63,15 @@ export class ChatsController {
     @Body() payload: UpdateChatDto,
   ): Promise<void> {
     return await this.service.update(chatId, userId, payload);
+  }
+
+  @Authorized()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(CHATS_ROUTES.DELETE)
+  public async delete(
+    @CurrentUser('id') userId: number,
+    @Param('id', ParseIntPipe) chatId: number,
+  ): Promise<void> {
+    return await this.service.delete(chatId, userId);
   }
 }

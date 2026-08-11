@@ -67,4 +67,17 @@ export class ChatsService {
     if (payload.description) chat.description = payload.description;
     await this.repository.save(this.mapper.toEntity(chat));
   }
+
+  public async delete(chatId: number, userId: number): Promise<void> {
+    const foundChat = await this.repository.findOne({
+      where: { id: chatId },
+      relations: { members: { user: true, chat: true } },
+    });
+    if (!foundChat)
+      throw new HttpException(CHAT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const chat = this.mapper.toModel(foundChat);
+    if (!chat.hasAdmin(userId))
+      throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    await this.repository.delete(chat.id!);
+  }
 }
