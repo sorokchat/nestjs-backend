@@ -19,6 +19,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
   app.use(cookieParser());
   app.useGlobalPipes(new ZodValidationPipe());
+  app.enableCors();
   const logger = app.get(Logger);
   const configService = app.get(ConfigService<Configuration>);
   const port = configService.getOrThrow('PORT', { infer: true });
