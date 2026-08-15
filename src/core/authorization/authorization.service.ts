@@ -13,9 +13,9 @@ import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class AuthorizationService {
-  private static readonly COOKIE_NAME: string = '__Host-refresh-token';
+  private static readonly COOKIE_NAME: string = 'refresh-token';
   private static readonly BASIC_COOKIE_OPTIONS: CookieOptions = {
-    secure: true,
+    secure: false,
     domain: undefined,
     path: '/',
     httpOnly: true,
