@@ -13,12 +13,13 @@ import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class AuthorizationService {
-  private static readonly COOKIE_NAME: string = 'refresh-token';
+  private static readonly COOKIE_NAME: string = '__Host-refresh-token';
   private static readonly BASIC_COOKIE_OPTIONS: CookieOptions = {
-    secure: false,
+    secure: true,
     path: '/',
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
+    partitioned: true,
   };
 
   constructor(
