@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: nestjs-backend
+    runtime: docker
+    repo: https://github.com/sorokchat/nestjs-backend.git
+    branch: master
+    autoDeploy: true
