@@ -28,6 +28,7 @@ export const ConfigurationSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string({
     message: 'Термін дії токену оновлення має бути рядком',
   }),
+  SSL: z.coerce.boolean('SSL може бути true, false').default(false),
 });
 
 export type Configuration = z.infer<typeof ConfigurationSchema>;

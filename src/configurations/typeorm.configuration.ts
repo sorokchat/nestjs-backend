@@ -13,5 +13,6 @@ export function getTypeormConfiguration(
     password: configService.getOrThrow('DB_PASSWORD', { infer: true }),
     synchronize: true,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    ssl: configService.getOrThrow('SSL', { infer: true }),
   };
 }
