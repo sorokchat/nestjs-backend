@@ -19,7 +19,7 @@ export class AuthorizationService {
     domain: undefined,
     path: '/',
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
   };
 
   constructor(
