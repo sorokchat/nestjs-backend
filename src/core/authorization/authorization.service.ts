@@ -16,10 +16,10 @@ export class AuthorizationService {
   private static readonly COOKIE_NAME: string = 'refresh-token';
   private static readonly BASIC_COOKIE_OPTIONS: CookieOptions = {
     secure: false,
-    domain: undefined,
+    domain: '.onrender.com',
     path: '/',
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     partitioned: true,
   };
 
