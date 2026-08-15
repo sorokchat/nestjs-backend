@@ -10,4 +10,4 @@ WORKDIR /opt/app
 COPY --from=build /opt/app/dist ./dist
 ADD *.json .
 RUN npm ci --omit=dev
-CMD ["node", "./dist/main.js", "--use-system-ca"]
+CMD ["node", "./dist/main.js"]
