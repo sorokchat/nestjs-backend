@@ -8,12 +8,19 @@ import {
 } from '@sorokchat/contracts';
 import { type UserModel } from '../users/user.model';
 import { verify } from 'argon2';
-import { type Request, type Response } from 'express';
+import { CookieOptions, type Request, type Response } from 'express';
 import { TokensService } from '../tokens/tokens.service';
 
 @Injectable()
 export class AuthorizationService {
   private static readonly COOKIE_NAME: string = '__Host-refresh-token';
+  private static readonly BASIC_COOKIE_OPTIONS: CookieOptions = {
+    secure: true,
+    domain: undefined,
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+  };
 
   constructor(
     private readonly usersService: UsersService,
@@ -45,11 +52,10 @@ export class AuthorizationService {
   }
 
   public logout(response: Response): void {
-    response.clearCookie(AuthorizationService.COOKIE_NAME, {
-      secure: true,
-      httpOnly: true,
-      sameSite: 'none',
-    });
+    response.clearCookie(
+      AuthorizationService.COOKIE_NAME,
+      AuthorizationService.BASIC_COOKIE_OPTIONS,
+    );
   }
 
   public async refreshTokens(
@@ -87,10 +93,8 @@ export class AuthorizationService {
 
   private setRefreshToken(token: string, response: Response): void {
     response.cookie(AuthorizationService.COOKIE_NAME, token, {
+      ...AuthorizationService.BASIC_COOKIE_OPTIONS,
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: true,
-      httpOnly: true,
-      sameSite: 'none',
     });
   }
 }
