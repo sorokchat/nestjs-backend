@@ -15,7 +15,7 @@ export class AccessTokenMiddleware implements NestMiddleware {
     _response: Response,
     next: () => void,
   ): Promise<void> {
-    const header = request.headers['Authorization'];
+    const header = request.headers.authorization;
     if (!header) return next();
     if (typeof header !== 'string') return next();
     const parsed = await this.tokensService.verifyAccessToken(
