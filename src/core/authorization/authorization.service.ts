@@ -20,6 +20,7 @@ export class AuthorizationService {
     path: '/',
     httpOnly: true,
     sameSite: 'none',
+    partitioned: true,
   };
 
   constructor(
