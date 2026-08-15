@@ -15,7 +15,7 @@ import { TokensService } from '../tokens/tokens.service';
 export class AuthorizationService {
   private static readonly COOKIE_NAME: string = 'refresh-token';
   private static readonly BASIC_COOKIE_OPTIONS: CookieOptions = {
-    secure: true,
+    secure: false,
     domain: undefined,
     path: '/',
     httpOnly: true,
