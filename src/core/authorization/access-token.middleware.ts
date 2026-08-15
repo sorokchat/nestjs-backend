@@ -8,17 +8,18 @@ export class AccessTokenMiddleware implements NestMiddleware {
   constructor(
     private readonly tokensService: TokensService,
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   public async use(
     request: Request,
     _response: Response,
     next: () => void,
   ): Promise<void> {
-    const header = request.headers['authorization'];
+    const header = request.headers['Authorization'];
     if (!header) return next();
+    if (typeof header !== 'string') return next();
     const parsed = await this.tokensService.verifyAccessToken(
-      header?.replace('Bearer ', ''),
+      header.replace('Bearer ', ''),
     );
     if (!parsed) return next();
     try {

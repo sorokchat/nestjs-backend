@@ -18,7 +18,7 @@ export class AuthorizationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly tokensService: TokensService,
-  ) {}
+  ) { }
 
   public async register(
     payload: RegisterDto,
@@ -48,6 +48,7 @@ export class AuthorizationService {
     response.clearCookie(AuthorizationService.COOKIE_NAME, {
       secure: true,
       httpOnly: true,
+      sameSite: 'none',
     });
   }
 
@@ -89,6 +90,7 @@ export class AuthorizationService {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       secure: true,
       httpOnly: true,
+      sameSite: 'none',
     });
   }
 }
