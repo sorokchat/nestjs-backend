@@ -11,7 +11,7 @@ export function getTypeormConfiguration(
     port: configService.getOrThrow('DB_PORT', { infer: true }),
     username: configService.getOrThrow('DB_USERNAME', { infer: true }),
     password: configService.getOrThrow('DB_PASSWORD', { infer: true }),
-    name: configService.getOrThrow('DB_NAME', { infer: true }),
+    database: configService.getOrThrow('DB_NAME', { infer: true }),
     synchronize: true,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     ssl: {
