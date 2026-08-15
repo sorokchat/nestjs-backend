@@ -7,6 +7,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { resolveNestJsOpenApi } from '@sorokchat/contracts';
+import { getCorsConfiguration } from './configurations/cors.configuration';
 
 async function setupSwagger(app: INestApplication<unknown>): Promise<void> {
   const document = await resolveNestJsOpenApi('');
@@ -19,7 +20,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
   app.use(cookieParser());
   app.useGlobalPipes(new ZodValidationPipe());
-  app.enableCors();
+  app.enableCors(getCorsConfiguration());
   const logger = app.get(Logger);
   const configService = app.get(ConfigService<Configuration>);
   const port = configService.getOrThrow('PORT', { infer: true });
