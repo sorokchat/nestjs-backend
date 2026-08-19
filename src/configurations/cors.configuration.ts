@@ -13,6 +13,7 @@ export function getCorsConfiguration(): CorsOptions {
       'Authorization',
       'Accept',
       'X-Requested-With',
+      'Cache-Control',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     maxAge: 3600,
